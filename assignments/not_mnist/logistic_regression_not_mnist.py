@@ -7,11 +7,16 @@ data with TensorFlow
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 import time
+import json
 
 # Define params for the model
-learning_rate = 0.01
-batch_size = 128
-n_epochs = 30
+
+with open('config.json') as data_file:
+    config = json.load(data_file)
+
+learning_rate = config['learning_rate']
+batch_size = config['batch_size']
+n_epochs = config['n_epochs']
 
 # Step 1: Read in data
 not_mnist = input_data.read_data_sets('notMNIST_data', one_hot=True)
@@ -45,15 +50,35 @@ entropy = tf.nn.softmax_cross_entropy_with_logits(labels=Y,
 loss = tf.reduce_mean(entropy)
 
 # Step 6: define training op
-optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss)
+optimizer_list = {
+    "gradient_descent": lambda learn_rate, loss:
+    tf.train.GradientDescentOptimizer(learn_rate).minimize(loss),
+    "adadelta": lambda learn_rate, loss:
+    tf.train.AdadeltaOptimizer(learn_rate).minimize(loss),
+    "adam": lambda learn_rate, loss:
+    tf.train.AdamOptimizer(learn_rate).minimize(loss)
+}
+
+for key, value in config['optimizer'].items():
+    if value:
+        optimizer_func = optimizer_list[key]
+
+optimizer = optimizer_func(learning_rate, loss)
+# optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss)
+
 
 with tf.Session() as sess:
     # to visualize using TensorBoard
     writer = tf.summary.FileWriter('./graph', sess.graph)
 
+    print('samples: train {0} \n test {1}'
+          .format(not_mnist.train.num_examples,
+                  not_mnist.test.num_examples))
+
     start_time = time.time()
     sess.run(tf.global_variables_initializer())
     n_batches = int(not_mnist.train.num_examples / batch_size)
+    print('# of train batches: {0}'.format(n_batches))
     for i in range(n_epochs):
         total_loss = 0
 
@@ -70,6 +95,8 @@ with tf.Session() as sess:
 
     # Test the model
     n_batches = int(not_mnist.test.num_examples / batch_size)
+    print('# of test batches: {0}'.format(n_batches))
+
     total_correct_preds = 0
 
     for i in range(n_batches):
