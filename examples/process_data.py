@@ -1,6 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 from collections import Counter
 import random
@@ -54,7 +54,7 @@ def build_vocab(words, vocab_size):
             if index < 1000:
                 f.write(word + "\n")
             index += 1
-    index_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
+    index_dictionary = dict(list(zip(list(dictionary.values()), list(dictionary.keys()))))
     return dictionary, index_dictionary
 
 def convert_words_to_index(words, dictionary):

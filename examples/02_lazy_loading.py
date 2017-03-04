@@ -14,7 +14,7 @@ with tf.Session() as sess:
 	writer = tf.summary.FileWriter('./my_graph/l2', sess.graph)
 	for _ in range(10):
 		sess.run(z)
-	print tf.get_default_graph().as_graph_def()
+	print(tf.get_default_graph().as_graph_def())
 	writer.close()
 
 # lazy loading
@@ -26,5 +26,5 @@ with tf.Session() as sess:
 	writer = tf.summary.FileWriter('./my_graph/l2', sess.graph)
 	for _ in range(10):
 		sess.run(tf.add(x, y))
-	print tf.get_default_graph().as_graph_def()
+	print(tf.get_default_graph().as_graph_def())
 	writer.close()

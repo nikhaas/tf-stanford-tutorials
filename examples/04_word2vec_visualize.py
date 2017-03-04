@@ -2,9 +2,9 @@
 and code to visualize the embeddings on TensorBoard
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import os
 
@@ -106,8 +106,8 @@ def train_model(model, batch_gen, num_train_steps, weights_fld):
         total_loss = 0.0 # we use this to calculate late average loss in the last SKIP_STEP steps
         writer = tf.summary.FileWriter('improved_graph/lr' + str(LEARNING_RATE), sess.graph)
         initial_step = model.global_step.eval()
-        for index in xrange(initial_step, initial_step + num_train_steps):
-            centers, targets = batch_gen.next()
+        for index in range(initial_step, initial_step + num_train_steps):
+            centers, targets = next(batch_gen)
             feed_dict={model.center_words: centers, model.target_words: targets}
             loss_batch, _, summary = sess.run([model.loss, model.optimizer, model.summary_op], 
                                               feed_dict=feed_dict)

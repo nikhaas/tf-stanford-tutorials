@@ -75,7 +75,7 @@ def examples_queue(data_sources, data_fields_to_features, training,
         data_fields_to_features, data_items_to_decoders)
 
     if data_items_to_decode is None:
-      data_items_to_decode = data_items_to_decoders.keys()
+      data_items_to_decode = list(data_items_to_decoders.keys())
 
     decoded = decoder.decode(example_serialized, items=data_items_to_decode)
     return {field: tensor
@@ -110,17 +110,17 @@ def batch_examples(examples, batch_size, bucket_boundaries=None):
   # Create default buckets if none were provided.
   if bucket_boundaries is None:
     # Small buckets -- go in steps of 8 until 64.
-    small_buckets = [8 * (i + 1) for i in xrange(8)]
+    small_buckets = [8 * (i + 1) for i in range(8)]
     # Medium buckets -- go in steps of 32 until 256.
-    medium_buckets = [32 * (i + 3) for i in xrange(6)]
+    medium_buckets = [32 * (i + 3) for i in range(6)]
     # Large buckets -- go in steps of 128 until maximum of 1024.
-    large_buckets = [128 * (i + 3) for i in xrange(6)]
+    large_buckets = [128 * (i + 3) for i in range(6)]
     # By default use the above 20 bucket boundaries (21 queues in total).
     bucket_boundaries = small_buckets + medium_buckets + large_buckets
   with tf.name_scope("batch_examples"):
     # The queue to bucket on will be chosen based on maximum length.
     max_length = 0
-    for v in examples.values():  # We assume 0-th dimension is the length.
+    for v in list(examples.values()):  # We assume 0-th dimension is the length.
       max_length = tf.maximum(max_length, tf.shape(v)[0])
     (_, outputs) = tf.contrib.training.bucket_by_sequence_length(
         max_length, examples, batch_size, bucket_boundaries,

@@ -25,15 +25,15 @@ def train(dataset):
         session.run(init)
 
         dataset_size = len(dataset.train.images)
-        print "Dataset size:", dataset_size
+        print("Dataset size:", dataset_size)
         num_iters = (num_epochs * dataset_size)/batch_size
-        print "Num iters:", num_iters
-        for step in xrange(num_iters):
+        print("Num iters:", num_iters)
+        for step in range(num_iters):
             input_batch  = get_next_batch(dataset.train, batch_size)
             loss_val,  _ = session.run([loss, optimizer], 
                                        feed_dict={input_image: input_batch})
             if step % 1000 == 0:
-                print "Loss at step", step, ":", loss_val
+                print("Loss at step", step, ":", loss_val)
 
         test_batch = get_next_batch(dataset.test, batch_size)
         reconstruction = session.run(reconstructed_image,

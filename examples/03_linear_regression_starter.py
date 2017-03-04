@@ -47,7 +47,7 @@ with tf.Session() as sess:
 			# Session runs optimizer to minimize loss and fetch the value of loss
 			# TO DO: write sess.run()
 			total_loss += l
-		print "Epoch {0}: {1}".format(i, total_loss/n_samples)
+		print("Epoch {0}: {1}".format(i, total_loss/n_samples))
 	
 # plot the results
 # X, Y = data.T[0], data.T[1]

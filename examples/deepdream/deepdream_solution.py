@@ -1,8 +1,8 @@
 """DeepDream.
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+
+
+
 
 import os.path
 import zipfile
@@ -133,7 +133,7 @@ def main(unused_argv):
     step_scale = 1.0
     num_iter = 20
     with tf.Session() as sess:
-      for i in xrange(num_iter):
+      for i in range(num_iter):
         image_gradient, score_value = sess.run([input_gradient, score], {input_image:image})
         # Normalize the gradient, so the same step size should work 
         image_gradient /= image_gradient.std() + 1e-8 

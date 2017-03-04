@@ -65,7 +65,7 @@ def generate_batches(data_batch, label_batch):
         threads = tf.train.start_queue_runners(coord=coord)
         for _ in range(10): # generate 10 batches
             features, labels = sess.run([data_batch, label_batch])
-            print features
+            print(features)
         coord.request_stop()
         coord.join(threads)
 

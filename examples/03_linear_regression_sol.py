@@ -47,7 +47,7 @@ with tf.Session() as sess:
 			# Session runs train_op and fetch values of loss
 			_, l = sess.run([optimizer, loss], feed_dict={X: x, Y:y}) 
 			total_loss += l
-		print 'Epoch {0}: {1}'.format(i, total_loss/n_samples)
+		print('Epoch {0}: {1}'.format(i, total_loss/n_samples))
 
 	# close the writer when you're done using it
 	writer.close() 

@@ -7,7 +7,7 @@ def neural_gpu(features, hparams, name=None):
 
     def step(state, inp):
       x = tf.nn.dropout(state, 1.0 - hparams.dropout)
-      for layer in xrange(hparams.num_hidden_layers):
+      for layer in range(hparams.num_hidden_layers):
         x = common_layers.conv_gru(
             x, hparams.kernel_size, hparams.hidden_size, name="cgru_%d" % layer)
       return tf.where(inp == 0, state, x)  # No-op where inp is just padding=0.

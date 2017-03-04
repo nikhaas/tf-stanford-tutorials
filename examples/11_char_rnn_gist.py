@@ -5,7 +5,7 @@ for the class CS 20SI: "TensorFlow for Deep Learning Research"
 Based on Andrej Karpathy's blog: 
 http://karpathy.github.io/2015/05/21/rnn-effectiveness/
 """
-from __future__ import print_function
+
 import os
 import time
 

@@ -1,8 +1,6 @@
 """ Using convolutional net on MNIST dataset of handwritten digit
 (http://yann.lecun.com/exdb/mnist/)
 """
-from __future__ import print_function
-
 import os
 import time 
 
@@ -44,6 +42,7 @@ with tf.variable_scope('conv1') as scope:
     # use the dynamic dimension -1
     
     # TO DO
+    pass
 
     # create kernel variable of dimension [5, 5, 1, 32]
     # use tf.truncated_normal_initializer()
@@ -69,6 +68,7 @@ with tf.variable_scope('pool1') as scope:
     # apply max pool with ksize [1, 2, 2, 1], and strides [1, 2, 2, 1], padding 'SAME'
     
     # TO DO
+    pass
 
     # output is of dimension BATCH_SIZE x 14 x 14 x 32
 
@@ -113,7 +113,8 @@ with tf.variable_scope('softmax_linear') as scope:
     # you need to create weights and biases
 
     # TO DO
-
+    pass 
+    
 # Step 6: define loss function
 # use softmax cross entropy with logits as the loss function
 # compute mean cross entropy, softmax is applied internally
@@ -121,7 +122,7 @@ with tf.name_scope('loss'):
     # you should know how to do this too
     
     # TO DO
-
+    pass
 # Step 7: define training op
 # using gradient descent with learning rate of LEARNING_RATE to minimize cost
 # don't forgot to pass in global_step
@@ -151,7 +152,7 @@ with tf.Session() as sess:
                                 feed_dict={X: X_batch, Y:Y_batch, dropout: DROPOUT}) 
         total_loss += loss_batch
         if (index + 1) % SKIP_STEP == 0:
-            print('Average loss at step {}: {:5.1f}'.format(index + 1, total_loss / SKIP_STEP))
+            print('Average loss at step {}: {:5.1f}'.format(index + 1, total_loss / SKIP_STEP)) 
             total_loss = 0.0
             saver.save(sess, 'checkpoints/convnet_mnist/mnist-convnet', index)
     

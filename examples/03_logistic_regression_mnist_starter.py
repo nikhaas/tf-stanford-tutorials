@@ -62,9 +62,9 @@ with tf.Session() as sess:
 			# 
 			# 
 			total_loss += loss_batch
-		print 'Average loss epoch {0}: {1}'.format(i, total_loss/n_batches)
+		print('Average loss epoch {0}: {1}'.format(i, total_loss/n_batches))
 
-	print 'Total time: {0} seconds'.format(time.time() - start_time)
+	print('Total time: {0} seconds'.format(time.time() - start_time))
 
 	print('Optimization Finished!') # should be around 0.35 after 25 epochs
 
@@ -79,4 +79,4 @@ with tf.Session() as sess:
 		accuracy = tf.reduce_sum(tf.cast(correct_preds, tf.float32)) # need numpy.count_nonzero(boolarr) :(
 		total_correct_preds += sess.run(accuracy)	
 	
-	print 'Accuracy {0}'.format(total_correct_preds/mnist.test.num_examples)
+	print('Accuracy {0}'.format(total_correct_preds/mnist.test.num_examples))
