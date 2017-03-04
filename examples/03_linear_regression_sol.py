@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import xlrd
 
-DATA_FILE = 'data/fire_theft.xls'
+DATA_FILE = '../data/fire_theft.xls'
 
 # Step 1: read in data from the .xls file
 book = xlrd.open_workbook(DATA_FILE, encoding_override="utf-8")
