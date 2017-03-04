@@ -1,7 +1,5 @@
 
 
-
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.tensorboard.plugins import projector
@@ -10,12 +8,13 @@ from process_data import process_data
 
 VOCAB_SIZE = 50000
 BATCH_SIZE = 128
-EMBED_SIZE = 128 # dimension of the word embedding vectors
-SKIP_WINDOW = 1 # the context window
+EMBED_SIZE = 128  # dimension of the word embedding vectors
+SKIP_WINDOW = 1  # the context window
 NUM_SAMPLED = 64    # Number of negative examples to sample.
 LEARNING_RATE = 1.0
 NUM_TRAIN_STEPS = 10000
-SKIP_STEP = 2000 # how many steps to skip before reporting the loss
+SKIP_STEP = 2000  # how many steps to skip before reporting the loss
+
 
 def word2vec(batch_gen):
     """ Build the graph for word2vec model and train it """
@@ -50,13 +49,13 @@ def word2vec(batch_gen):
     # TO DO
 
     # Step 5: define optimizer
-    
+
     # TO DO
 
     with tf.Session() as sess:
         # TO DO: initialize variables
 
-        total_loss = 0.0 # we use this to calculate the average loss in the last SKIP_STEP steps
+        total_loss = 0.0  # we use this to calculate the average loss in the last SKIP_STEP steps
         writer = tf.summary.FileWriter('./my_graph/no_frills/', sess.graph)
         for index in range(NUM_TRAIN_STEPS):
             centers, targets = next(batch_gen)
@@ -64,9 +63,12 @@ def word2vec(batch_gen):
 
             total_loss += loss_batch
             if (index + 1) % SKIP_STEP == 0:
-                print('Average loss at step {}: {:5.1f}'.format(index, total_loss / SKIP_STEP))
+                print(
+                    'Average loss at step {}: {:5.1f}'.format(
+                        index, total_loss / SKIP_STEP))
                 total_loss = 0.0
         writer.close()
+
 
 def main():
     batch_gen = process_data(VOCAB_SIZE, BATCH_SIZE, SKIP_WINDOW)
