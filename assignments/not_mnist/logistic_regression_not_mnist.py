@@ -8,11 +8,12 @@ import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 import time
 import json
+import os
 
 # Define params for the model
 
-with open('config.json') as data_file:
-    config = json.load(data_file)
+with open('config.json') as config_file:
+    config = json.load(config_file)
 
 learning_rate = config['learning_rate']
 batch_size = config['batch_size']
@@ -49,7 +50,7 @@ entropy = tf.nn.softmax_cross_entropy_with_logits(labels=Y,
 
 loss = tf.reduce_mean(entropy)
 
-# Step 6: define training op
+# Step 6: define training op.
 optimizer_list = {
     "gradient_descent": lambda learn_rate, loss:
     tf.train.GradientDescentOptimizer(learn_rate).minimize(loss),
@@ -64,16 +65,22 @@ for key, value in config['optimizer'].items():
         optimizer_func = optimizer_list[key]
 
 optimizer = optimizer_func(learning_rate, loss)
-# optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss)
-
 
 with tf.Session() as sess:
+
+    output = {"train_samples": -1,
+              "test_samples": -1,
+              "accuracy": -1,
+              "time": -1
+              }
     # to visualize using TensorBoard
     writer = tf.summary.FileWriter('./graph', sess.graph)
 
-    print('samples: train {0} \n test {1}'
-          .format(not_mnist.train.num_examples,
-                  not_mnist.test.num_examples))
+    # print('samples: train {0} \n test {1}'
+    #       .format(not_mnist.train.num_examples,
+    #               not_mnist.test.num_examples))
+    output["train_samples"] = not_mnist.train.num_examples
+    output["test_samples"] = not_mnist.test.num_examples
 
     start_time = time.time()
     sess.run(tf.global_variables_initializer())
@@ -111,5 +118,27 @@ with tf.Session() as sess:
 
     print('Accuracy {0}'.format(total_correct_preds /
                                 not_mnist.test.num_examples))
+    output["accuracy"] = total_correct_preds / not_mnist.test.num_examples
+    output["time"] = time.time() - start_time
+
+    # Write results in a file
+    agg_outputs = []
+
+    if not os.path.exists('results.json'):
+        with open('results.json', 'w+') as f:
+            f.write('[]')
+
+    with open('results.json', 'r') as output_file:
+        agg_outputs = json.load(output_file)
+
+    # new Python 3.5 syntax
+    config_and_result = {**config, **output}
+    agg_outputs.append(config_and_result)
+
+    # Pretty Print the results
+    with open('results.json', 'w') as output_file:
+        json.dump(agg_outputs, output_file, sort_keys=True,
+                  indent=4, separators=(',', ': '))
 
     writer.close()
+    sess.close()

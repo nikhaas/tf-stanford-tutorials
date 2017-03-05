@@ -1,0 +1,44 @@
+[
+    {
+        "accuracy": 0.8742,
+        "batch_size": 128,
+        "learning_rate": 0.01,
+        "n_epochs": 2,
+        "optimizer": {
+            "adadelta": false,
+            "adam": false,
+            "gradient_descent": true
+        },
+        "test_samples": 10000,
+        "time": 2.201399803161621,
+        "train_samples": 55000
+    },
+    {
+        "accuracy": 0.8742,
+        "batch_size": 128,
+        "learning_rate": 0.01,
+        "n_epochs": 2,
+        "optimizer": {
+            "adadelta": false,
+            "adam": false,
+            "gradient_descent": true
+        },
+        "test_samples": 10000,
+        "time": 2.2012157440185547,
+        "train_samples": 55000
+    },
+    {
+        "accuracy": 0.8737,
+        "batch_size": 128,
+        "learning_rate": 0.01,
+        "n_epochs": 2,
+        "optimizer": {
+            "adadelta": false,
+            "adam": false,
+            "gradient_descent": true
+        },
+        "test_samples": 10000,
+        "time": 2.214381456375122,
+        "train_samples": 55000
+    }
+]
