@@ -85,7 +85,7 @@ with tf.Session() as sess:
     start_time = time.time()
     sess.run(tf.global_variables_initializer())
     n_batches = int(not_mnist.train.num_examples / batch_size)
-    print('# of train batches: {0}'.format(n_batches))
+
     for i in range(n_epochs):
         total_loss = 0
 
@@ -96,13 +96,10 @@ with tf.Session() as sess:
             total_loss += loss_batch
         print('Average loss epoch {0}: {1}'.format(i, total_loss / n_batches))
 
-    print('Total time: {0} seconds'.format(time.time() - start_time))
-
     print('Optimization Finished!')
 
     # Test the model
     n_batches = int(not_mnist.test.num_examples / batch_size)
-    print('# of test batches: {0}'.format(n_batches))
 
     total_correct_preds = 0
 
