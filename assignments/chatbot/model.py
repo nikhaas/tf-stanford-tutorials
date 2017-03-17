@@ -34,22 +34,16 @@ class ChatBotModel(object):
     def _create_placeholders(self):
         # Feeds for inputs. It's a list of placeholders
         print('Create placeholders')
-        self.encoder_inputs = []
-        self.decoder_inputs = []
-        self.decoder_masks = []
-        for i in xrange(config.BUCKETS[-1][0]):  # Last bucket is the biggest one.
-            self.encoder_inputs.append(tf.placeholder(tf.int32, shape=[None],
-                                                    name='encoder{}'.format(i)))
-        for i in xrange(config.BUCKETS[-1][1] + 1):
-            self.decoder_inputs.append(tf.placeholder(tf.int32, shape=[None],
-                                                    name='decoder{}'.format(i)))
-            self.decoder_masks.append(tf.placeholder(tf.float32, shape=[None],
-                                                    name='mask{}'.format(i)))
+        self.encoder_inputs = [tf.placeholder(tf.int32, shape=[None], name='encoder{}'.format(i))
+                               for i in xrange(config.BUCKETS[-1][0])]
+        self.decoder_inputs = [tf.placeholder(tf.int32, shape=[None], name='decoder{}'.format(i))
+                               for i in xrange(config.BUCKETS[-1][1] + 1)]
+        self.decoder_masks = [tf.placeholder(tf.float32, shape=[None], name='mask{}'.format(i))
+                              for i in xrange(config.BUCKETS[-1][1] + 1)]
 
         # Our targets are decoder inputs shifted by one (to ignore <s> symbol)
-        self.targets = [self.decoder_inputs[i + 1]
-                        for i in xrange(len(self.decoder_inputs) - 1)]
-
+        self.targets = self.decoder_inputs[1:]
+        
     def _inference(self):
         print('Create inference')
         # If we use sampled softmax, we need an output projection.
@@ -110,12 +104,9 @@ class ChatBotModel(object):
         print('Create optimizer... \nIt might take a couple of minutes depending on how many buckets you have.')
         with tf.variable_scope('training') as scope:
             self.global_step = tf.Variable(0, dtype=tf.int32, trainable=False, name='global_step')
-            # self.lr = tf.Variable(float(config.LR), trainable=False)
-            # self.lr_decay_op = self.lr.assign(self.lr * config.LR_DECAY_FACTOR)
-            self.lr = config.LR
 
             if not self.fw_only:
-                self.optimizer = tf.train.GradientDescentOptimizer(self.lr)
+                self.optimizer = tf.train.GradientDescentOptimizer(config.LR)
                 trainables = tf.trainable_variables()
                 self.gradient_norms = []
                 self.train_ops = []

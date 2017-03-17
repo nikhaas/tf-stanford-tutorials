@@ -90,17 +90,17 @@ def training(vocab, seq, loss, optimizer, global_step,
         for batch in read_batch(read_data(DATA_PATH, vocab)):
             batch_loss, _ = sess.run([loss, optimizer], {seq: batch})
             if (iteration + 1) % SKIP_STEP == 0:
-                print('Iter {}. \n    Loss {}. Time {}'.format(
-                    iteration, batch_loss, time.time() - start))
-                online_intference(sess, vocab, seq, sample,
-                                  temp, in_state, out_state)
+                print('Iter {}. \n    Loss {}. Time {}'.format(iteration, batch_loss, time.time() \
+                      - start))
+                online_inference(sess, vocab, seq, sample, temp, in_state, out_state)
                 start = time.time()
                 saver.save(sess, 'checkpoints/arvix/char-rnn', iteration)
             iteration += 1
 
 
-def online_intference(sess, vocab, seq, sample, temp,
-                      in_state, out_state, seed='T'):
+
+
+def online_inference(sess, vocab, seq, sample, temp, in_state, out_state, seed='T'):
     """ Generate sequence one character at a time, based on the previous character
     """
     sentence = seed
