@@ -1,10 +1,3 @@
-# uncompyle6 version 2.9.10
-# Python bytecode 3.5 (3350)
-# Decompiled from: Python 3.5.2 |Anaconda 4.0.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
-# [GCC 4.4.7 20120313 (Red Hat 4.4.7-1)]
-# Embedded file name: /home/niklas/ML-KA/tensorflow/tf_stanford/tf-stanford-tutorials/assignments/01_counting_model/context_counting_model.py
-# Compiled at: 2017-03-21 17:53:08
-# Size of source mod 2**32: 5332 bytes
 """ Generate a co-occurence matrix  with tensorflow.
 In this approach, co-occurence of words are counted and transformed to a
 word embedding via SVD. This is different to context-predicting models
@@ -16,6 +9,9 @@ import tensorflow as tf
 import zipfile
 from collections import Counter
 import numpy as np
+from tensorflow.contrib.tensorboard.plugins import projector
+import os
+
 
 class CooccurenceMatrix:
     """ Build a cooccurence matrix """
@@ -49,34 +45,40 @@ class CooccurenceMatrix:
                     f.write(word + '\n')
                 index += 1
 
-        index_dictionary = dict(list(zip(list(dictionary.values()), list(dictionary.keys()))))
-        return (
-         dictionary, index_dictionary)
+        index_dictionary = dict(list(zip(list(dictionary.values()),
+                                         list(dictionary.keys()))))
+        return (dictionary, index_dictionary)
 
     def convert_words_to_index(self, words, dictionary):
         """
         Replace each word in the dataset with its index in the dictionary """
-        return [(dictionary[word] if word in dictionary else 0) for word in words]
+        return [(dictionary[word]
+                 if word in dictionary else 0) for word in words]
 
-    def generate_skip_grams(self, words_as_indices, context_window_size, printit=False):
+    def generate_skip_grams(self, words_as_indices,
+                            context_window_size, printit=False):
         """ Form pairs according to the skip-gram model. """
         for index, center in enumerate(words_as_indices):
-            for target in words_as_indices[max(0, index - context_window_size[0]):index]:
+            for target in words_as_indices[max(0,
+                                               index - context_window_size[0]):
+                                           index]:
                 if index % 10000 == 0 and printit:
                     print(index, target)
                 yield (
-                 center, target)
+                    center, target)
 
-            for target in words_as_indices[index + 1:index + context_window_size[1] + 1]:
+            for target in words_as_indices[index + 1:
+                                           index + context_window_size[1] + 1]:
                 if index % 10000 == 0 and printit:
                     print(index, target)
                 yield (
-                 center, target)
+                    center, target)
 
-    def create_matrix(self, vocabulary_as_indices, context_words_as_indices, skip_grams):
+    def create_matrix(self, vocabulary_as_indices,
+                      context_words_as_indices, skip_grams):
         """ create the occurence matrix """
         occurence_matrix = np.zeros((len(vocabulary_as_indices),
-         len(context_words_as_indices)))
+                                     len(context_words_as_indices)))
         for center, target in skip_grams:
             occurence_matrix[(center, target)] += 1
 
@@ -91,12 +93,31 @@ def main():
     words = matrix.read_data('text8.zip')
     word_index, index_word = matrix.build_vocab(words, VOCAB_SIZE)
     words_as_indices = matrix.convert_words_to_index(words, word_index)
-    skip_grams = matrix.generate_skip_grams(words_as_indices, SKIP_WINDOW, printit=False)
-    occurence_matrix = matrix.create_matrix(list(index_word.keys()), list(index_word.keys()), skip_grams)
+    skip_grams = matrix.generate_skip_grams(
+        words_as_indices, SKIP_WINDOW, printit=False)
+    occurence_matrix = matrix.create_matrix(
+        list(index_word.keys()), list(index_word.keys()), skip_grams)
+
+    # normalize matrix
     row_sums = np.sum(occurence_matrix, axis=1)
+    # newaxis is needed for proper normalization
     occurence_matrix_normalized = occurence_matrix / row_sums[:, np.newaxis]
+
+    # assemble graph
     occ_ten = tf.Variable(occurence_matrix_normalized)
     s, u, v = tf.svd(occ_ten, full_matrices=False)
+    s_diag = tf.diag(s)
+    tensor_list = []
+    for embedding_size in [50, 100, 150, 200, 250, 300]:
+        lowerdim = tf.matmul(u[:, 0:embedding_size],
+                             s_diag[0:embedding_size,
+                                    0:embedding_size],
+                             transpose_b=True,
+                             name=''.join(['embedding',
+                                           str(embedding_size)]))
+        tensor_list.append(tf.Variable(lowerdim,
+                                       name=''.join(['embedding',
+                                                     str(embedding_size)])))
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         occ_ten.initializer.run()
@@ -104,10 +125,22 @@ def main():
         u_tf = u.eval()
         singular_values_np = np.asarray(singular_values_tf)
         u_tf = np.asarray(u_tf)
-        np.savetxt('singular_values_np.csv', singular_values_np, delimiter=',')
-        np.savetxt('u_tf.csv', u_tf, delimiter=',')
+        # np.savetxt('singular_values_np.csv', singular_values_np, delimiter=',')
+        # np.savetxt('u_tf.csv', u_tf, delimiter=',')
+
+        config = projector.ProjectorConfig()                     
+        summary_writer = tf.summary.FileWriter('embeddings')
+        embedding = config.embeddings.add()
+        embedding.tensor_name = embedding_var.name
+        embedding.metadata_path = 'vocab_10000.dsv'
+
+
+        projector.visualize_embeddings(summary_writer, config)
+        saver_embed = tf.train.Saver([embedding_var])
+        saver_embed.save(sess, ''.join(['embeddings/embed_size',
+                                        embedding_size]), 1)
+
 
 
 if __name__ == '__main__':
     main()
-# okay decompiling context_counting_model.cpython-35.pyc
