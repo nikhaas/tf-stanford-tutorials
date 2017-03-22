@@ -115,31 +115,25 @@ def main():
                              transpose_b=True,
                              name=''.join(['embedding',
                                            str(embedding_size)]))
-        tensor_list.append(tf.Variable(lowerdim,
-                                       name=''.join(['embedding',
-                                                     str(embedding_size)])))
+        embed_var = (tf.Variable(lowerdim,
+                                 name=''.join(['embedding',
+                                               str(embedding_size)])))
+        tensor_list.append((lowerdim, embed_var))
+
     with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
-        occ_ten.initializer.run()
-        singular_values_tf = s.eval()
-        u_tf = u.eval()
-        singular_values_np = np.asarray(singular_values_tf)
-        u_tf = np.asarray(u_tf)
-        # np.savetxt('singular_values_np.csv', singular_values_np, delimiter=',')
-        # np.savetxt('u_tf.csv', u_tf, delimiter=',')
-
-        config = projector.ProjectorConfig()                     
-        summary_writer = tf.summary.FileWriter('embeddings')
-        embedding = config.embeddings.add()
-        embedding.tensor_name = embedding_var.name
-        embedding.metadata_path = 'vocab_10000.dsv'
-
+        for lowerdim, embed_var in tensor_list:
+            sess.run(lowerdim)
+            sess.run(embed_var.initializer)
+        config = projector.ProjectorConfig()                   
+        summary_writer = tf.summary.FileWriter('embeddings', sess.graph)
+        for embedding_var in tensor_list:
+            embedding = config.embeddings.add()
+            embedding.tensor_name = embedding_var.name
+            embedding.metadata_path = 'vocab_10000.dsv'
 
         projector.visualize_embeddings(summary_writer, config)
-        saver_embed = tf.train.Saver([embedding_var])
-        saver_embed.save(sess, ''.join(['embeddings/embed_size',
-                                        embedding_size]), 1)
-
+        saver_embed = tf.train.Saver([tensor_list])
+        saver_embed.save(sess, ''.join(['embeddings/checkpoint']), 1)
 
 
 if __name__ == '__main__':
