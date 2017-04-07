@@ -12,7 +12,7 @@ import tensorflow as tf
 # Parameters for downloading data
 DOWNLOAD_URL = 'http://mattmahoney.net/dc/'
 EXPECTED_BYTES = 31344016
-DATA_FOLDER = '/Users/Chip/data/'
+DATA_FOLDER = './data/'
 FILE_NAME = 'text8.zip'
 
 
@@ -53,7 +53,7 @@ def build_vocab(words, vocab_size):
         # f.write("Name\n")
         for word, _ in count:
             dictionary[word] = index
-            if index < 1000:
+            if index < vocab_size:
                 f.write(word + "\n")
             index += 1
     index_dictionary = dict(
